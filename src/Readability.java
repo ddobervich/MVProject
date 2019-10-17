@@ -1,34 +1,57 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Readability {
     public static void main(String[] args) {
-        //testSyllableMethod();
+
+     /*   ArrayList<DocInfo> docs = TextLib.readDocsFile("data/Texts/allfeatures-ose-final.csv");
+
+        for (DocInfo doc : docs) {
+            String filename = doc.getFilename();    // "amazon-adv.txt"
+            String text = TextLib.readFileAsString("data/Texts/AllTexts/" + filename);
+
+            if (text.length() > 0) {
+                ArrayList<String> sentences = TextLib.splitIntoSentences(text);
+
+            }
+        }
 
         String test = TextLib.readFileAsString("data/Texts/AllTexts/Amazon-adv.txt");
         //System.out.println(test);
-
         ArrayList<String> sentences = TextLib.splitIntoSentences(test);
 
-        for (String sentence : sentences) {
-            System.out.println(sentence.length() + ": " + sentence);
-        }
-
-        // TODO:  Break each sentence into words.
-        // TODO:  Force to lower-case and strip out all puctuation for doing syllable counts.
+        double score = FKReadability(sentences);
+        System.out.println(score);*/
     }
 
-    private static void testSyllableMethod() {
-        ArrayList<Word> words = TextLib.readSyllablesFile("data/syllables.txt");
+    private static double FKReadability(ArrayList<String> sentences) {
+        double wordCount = 0;
+        double syllableCount = 0;
 
-        double right = 0;
-        for (Word w : words) {
-            String word = w.getWord();
-            int prediction = syllablesFor(word);
+        for (String sentence : sentences) {
+            ArrayList<String> words = getWords(sentence);
+            wordCount += words.size();
 
-            if (prediction == w.getSyllables()) right++;
+            for (String word : words) {
+                syllableCount += syllablesFor(word);
+            }
         }
 
-        System.out.println("You got " + (right/words.size()) + " right");
+        return 206.835 - 1.01*(wordCount/sentences.size())-
+                84.6*(syllableCount/wordCount);
+    }
+
+    private static ArrayList<String> getWords(String sentence) {
+        ArrayList<String> words = new ArrayList<String>();
+
+        String[] arr = sentence.split(" ");
+        for (String word : arr) {
+            if (word.length() > 0) {
+                words.add(word);
+            }
+        }
+
+        return words;
     }
 
     private static int syllablesFor(String testWord) {
